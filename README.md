@@ -3,7 +3,7 @@ Pro git 第二版中文翻译。
 
 ## 内容提要
 
-* 第一章：起步
+* [第一章：起步](./chp1-getting-started.md)
 * 第二章：Git 基础
 * 第三章：Git 分支
 * 第四章：服务器端 Git
