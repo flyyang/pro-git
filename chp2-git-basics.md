@@ -124,3 +124,170 @@ nothing added to commit but untracked files present (use "git add" to track)
 
 ### 追踪（tracking）新的文件
 
+为了追踪一个新文件，你需要使用 git add 命令。添加一个 README 文件， 运行下面的
+命令：
+
+```
+$ git add README
+```
+
+如果再次运行状态查看命令，你会看到 README 文件已经被追踪，并且处于暂存待提交的
+状态：
+
+```
+$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD <FILE>..." to unstage)
+
+  new file: README
+```
+
+你可以看到文件被暂存到所有待提交的头部。如果在此时提交，最后一次运行 git add
+命令的改动会进入到快照历史。你可能会想起不久前运行的 git init 命令，然后运行了
+git add (files) —— 那就是追踪目录里的文件。git add 接收参数为文件路径名或目录，
+如果为目录，git 会递归添加目录下的所有文件以及文件夹。
+
+### 暂存修改的文件
+
+让我们修改一个已经被暂存的文件。如果你改变一个之前已经被暂存的名为
+benchmarks.rb 的文件，然后再次运行 git status, 你将会看到如下的结果：
+
+```
+$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD <FILE>..." to unstage)
+
+  new file: README
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+  modified: benchmarks.rb
+```
+
+benchmarks.rb 文件显示在改变但是还没有暂存起来做commit的区域 —— 表明此文件是一
+个已被暂存过的文件，但是被修改后没有再次暂存起来。使用 git add 命令可以再次暂
+存。git add 命令是一个多用途的命令 —— 你可以用来追踪新的文件，可以暂存文件，也
+可以做其他的事情，比如标记文件冲突已经被解决。把它看做“把这些内容放到下一个
+commit” 可能会比“把这些文件添加到项目中”更容易帮助理解一些。然我们运行 git add
+把 benchmarks.rb 暂存起来，然后再次运行 git status:
+
+```
+$ git add benchmarks.rb
+$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD <file>..." to unstage)
+
+  new file: README
+  modified: benchmarks.rb
+```
+
+两个文件都被暂存起来了，并且都会出现在下一个 commit 中。 在此时，我们假设你突然
+想到要在提交之前对 benchmarks.rb 在做点小改动。你打开它，然后做修改。改完准备提
+交。这个时候再运行 git status：
+
+```
+$ vim benchmarks.rb
+$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD <file>..." to unstage)
+
+  new file: README
+  modified: benchmarks.rb
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+  modified: benchmarks.rb
+```
+
+发生了什么？现在 benchmarks.rb 即被暂存，又没有被暂存。怎么可能？最终的结论是
+Git 确实会在运行 git add 命令时将文件暂存。如果此时 commit，最终进入commmit的
+benchmarks.rb的版本是最近一次运行 git add 命令时的版本，而不是运行git commit 工
+作目录下的版本。如果你在 git add 之后修改了文件，需要再次运行 git add 将最新版
+本存入暂存区。
+
+```
+$ git benchmarks.rb
+$ git status
+On branch master
+Changes to be committed:
+
+  (use "git reset HEAD <file>..." to unstage)
+
+  new file: README
+  modified: benchmarks.rb
+```
+
+### git status 简写
+
+尽管 git status 的输出非常详尽，但是也显得啰嗦。 Git 提供了一个输出简写状态的选
+项，可以以简写的方式查看你的修改。运行 git status -s 或者 git status --short,
+你会看到一个相对来说非常简洁的输出：
+
+```
+$ git status -s
+ M README
+MM Rakefile
+A lib/git.rb
+M lib/simplegit.rb
+?? LICENSE.txt
+```
+
+未追踪的新文件已 ?? 开头，新添加到暂存区的已 A 开头，修改的以M开头等等。命令输
+出有两列，左列表示是否在缓存区，右列表示是否修改。以 README 文件举例，此文件不
+在暂存区但是已经修改，而文件 lib/simpligit.rb 已修改并且在暂存区。Rakiefile在
+暂存区，已被修改，并且被再次修改，所以存在即在暂存区又不在暂存区的修改。
+
+### 忽略文件
+
+通常你会有一类文件并不想 Git 自动添加，甚至不想看到出现在未追踪区域。这些通常是
+自动申城的文件如日志文件或者被构建系统生成的文件。在这种情况下，你可以创建一个
+文件.gitingore,列出所有的模式来使 Git 忽略相关文件。看一个例子：
+
+```
+$ cat .giignore
+*.[oa]
+*~
+```
+
+第一行告诉 Git 忽略所有以 .o 或者 .a 结尾的文件 —— 可能是由构建系统产生的对象或
+者 archive 文件。 第二行告诉 Git 忽略所有一波浪线结尾的文件，Emacs等 文本编辑器
+以~线作为临时文件。你也可以添加 log ，tmp, pi 目录，自动生成的文档目录等。在项
+开始前目配置 .gitignore 是一个好的想法，这样就不容易提交一些你根本不想提交的文
+件到 Git 仓库中。
+
+.gitignore中的规则满足一下模式：
+
+* 空行或者以#号开头的行会被忽略
+* 可使用标准的 glob 模式
+* 以 / 为结尾表示目录
+* 以 ! 开头表示取反
+
+Glob 模式是 shell 使用的 正则表达式的简化版。 一个 * 号表示匹配 0 或多个字符；
+[abc] 匹配任何一个方括号内的字符（在这个例子a，b , 或者c）; 一个 ？号匹配一个字
+符。[0-9]匹配 0 到 9 之间所有的数字。你可以使用两个 * 号来匹配嵌套路径 `a/**/z`
+会匹配 a/z, a/b/z, a/b/c/z, 等等。
+
+下面是另外一个.gitignore的例子：
+
+```
+# a comment - this is ignored
+*.a # no .a files
+!lib.a # but do track lib.a, even though you're ignoring .a files above
+/TODO # only ignore the root TODO file, not subdir/TODO
+build/ # ignore all files in the build/ directory
+doc/*.txt # ignore doc/notes.txt, but not doc/server/arch.txt
+```
+
+> 提示: Github 维护了一个详尽的 .gitignore示例，示例来自于几十个项目或者语言，
+可供你在初始化项目时参考。链接
+[https://github.com/github/gitignore](https://github.com/github/gitignore)
+
+### 查看你的暂存文件和未暂存文件
