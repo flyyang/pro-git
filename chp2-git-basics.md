@@ -291,3 +291,6 @@ doc/*.txt # ignore doc/notes.txt, but not doc/server/arch.txt
 [https://github.com/github/gitignore](https://github.com/github/gitignore)
 
 ### 查看你的暂存文件和未暂存文件
+
+如果 git status 还不够清晰，你想要的不仅仅是什么文件被修改了，而是要看到具体的
+修改内容，可以使用 git diff 命令。
