@@ -293,4 +293,8 @@ doc/*.txt # ignore doc/notes.txt, but not doc/server/arch.txt
 ### 查看你的暂存文件和未暂存文件
 
 如果 git status 还不够清晰，你想要的不仅仅是什么文件被修改了，而是要看到具体的
-修改内容，可以使用 git diff 命令。
+修改内容，可以使用 git diff 命令。稍后会详细讲述 git diff, 现在先说明，这条命令
+通常是以下两个疑问的答案：你做了哪些改动，但是还没暂存起来？以及暂存了什么内容
+要在下一个 commit 中使用。尽管 `git status` 已经回答了上面的问题，不过是以文件
+名的方式， git diff 给你的却是到底是哪一行被变更的详细结果 —— 也就是通常所说的
+patch。
